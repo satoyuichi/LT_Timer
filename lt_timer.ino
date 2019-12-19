@@ -1,9 +1,10 @@
 #include <LedControl.h>
 
 #define START_BUTTON 2
-#define END_BUTTON 2
+#define END_BUTTON 3
+#define RING_BELL 4
 
-#define SELECT_SWITCH 4
+#define SELECT_SWITCH 5
 
 LedControl lc = LedControl(12,11,10,1);
 
@@ -22,6 +23,7 @@ void setup() {
 
   pinMode(START_BUTTON, INPUT_PULLUP);
   pinMode(END_BUTTON, INPUT_PULLUP);
+  pinMode(RING_BELL, OUTPUT);
   pinMode(SELECT_SWITCH, INPUT);
 
   attachInterrupt(digitalPinToInterrupt(START_BUTTON), onStartButton, FALLING);
@@ -35,6 +37,10 @@ void loop() {
 
   if (isCounting) {
     t = endTime - millis();
+
+    if (ring(t, 5UL * 60UL * 1000UL - 5000UL, 2000UL) == false) {
+      ring(t, 5UL * 60UL * 1000UL - 10000UL, 2000UL);
+    }
 
     if (isLT) {
       if ((2.5 * 60 * 1000) < t) {
@@ -119,4 +125,15 @@ void onEndButton() {
 
   attachInterrupt(digitalPinToInterrupt(START_BUTTON), onStartButton, FALLING);
   isCounting = false;
+}
+
+bool ring(unsigned long t, unsigned long start_t, unsigned long until) {
+  if ((t < start_t) && ((start_t - until) <= t)) {
+    digitalWrite(RING_BELL, HIGH);
+    return true;
+  }
+  else {
+    digitalWrite(RING_BELL, LOW);
+    return false;
+  }
 }
