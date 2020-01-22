@@ -6,7 +6,7 @@
 
 #define SELECT_SWITCH 5
 
-LedControl lc = LedControl(12,11,10,1);
+LedControl lc = LedControl(12,10,11,1);
 
 bool isLT;
 bool isCounting = false;
@@ -38,16 +38,15 @@ void loop() {
   if (isCounting) {
     t = endTime - millis();
 
-    if (ring(t, 5UL * 60UL * 1000UL - 5000UL, 2000UL) == false) {
-      ring(t, 5UL * 60UL * 1000UL - 10000UL, 2000UL);
-    }
-
     if (isLT) {
-      if ((2.5 * 60 * 1000) < t) {
+      if (((1UL * 60UL * 1000UL) < t) && (t < (2500UL * 60UL))) {
+        ring(t, 2500UL * 60UL, 500UL);
       }
-      else if (((1UL * 60UL * 1000UL) < t) && (t < (2.5 * 60 * 1000))) {
+      else if ((510UL < t) && (t < (1UL * 60UL * 1000UL))) {
+        ring(t, 1UL * 60UL * 1000UL, 500UL);
       }
-      else if (((59UL * 1000UL) < t) && (t < (1UL * 60UL * 1000UL))) {
+      else {
+        ring(t, 510UL, 500UL);
       }
     }
     else {
@@ -66,9 +65,6 @@ void loop() {
 void display7Seg(unsigned long t) {
   unsigned long min = t / 1000 / 60;
   unsigned long sec = (t - (min * 60 * 1000)) / 1000;
-
-//  Serial.println (min);
-//  Serial.println (sec);
 
   String strMin = String(min);
   String strSec = String(sec);
