@@ -6,7 +6,9 @@
 
 #define SELECT_SWITCH 5
 
-LedControl lc = LedControl(12,10,11,1);
+#define ADDITIONAL_TIME 300UL
+
+LedControl lc = LedControl(12, 10, 11, 1);
 
 bool isLT;
 bool isCounting = false;
@@ -28,9 +30,16 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(START_BUTTON), onStartButton, FALLING);
   attachInterrupt(digitalPinToInterrupt(END_BUTTON), onEndButton, FALLING);
+
+  isLT = true;
+  beginTime = millis();
+  endTime = 5UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME;
+  isCounting = true;
 }
 
 void loop() {
+  bool isRing = false;
+
   if (endTime <= millis()) {
     isCounting = false;
   }
@@ -39,24 +48,22 @@ void loop() {
     t = endTime - millis();
 
     if (isLT) {
-      if (((1UL * 60UL * 1000UL) < t) && (t < (2500UL * 60UL))) {
-        ring(t, 2500UL * 60UL, 500UL);
-      }
-      else if ((510UL < t) && (t < (1UL * 60UL * 1000UL))) {
-        ring(t, 1UL * 60UL * 1000UL, 500UL);
-      }
-      else {
-        ring(t, 510UL, 500UL);
-      }
+      isRing = ring(t, 2500UL * 60UL + 100UL, 100UL) |
+      ring(t, 1000UL * 60UL + 300UL, 100UL) |
+      ring(t, 1000UL * 60UL + 100UL, 100UL) |
+      ring(t, 500UL, 100UL) |
+      ring(t, 300UL, 100UL) |
+      ring(t, 100UL, 100UL);
     }
     else {
-      if ((5UL * 60UL * 1000UL) < t) {
-      }
-      else if (((1UL * 60UL * 1000UL) < t) && (t < (5UL * 60UL * 1000UL))) {
-      }
-      else if (((59UL * 1000UL) < t) && (t < (1UL * 60UL * 1000UL))) {
-      }
     }
+  }
+
+  if (isRing) {
+    digitalWrite(RING_BELL, HIGH);
+  }
+  else {
+    digitalWrite(RING_BELL, LOW);
   }
 
   display7Seg( t );
@@ -112,7 +119,7 @@ void onStartButton() {
 
   isLT = digitalRead(SELECT_SWITCH);
   beginTime = millis();
-  endTime = isLT ? (5UL * 60UL * 1000UL + beginTime) : (15UL * 60UL * 1000UL + beginTime);
+  endTime = isLT ? (5UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME) : (15UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME);
   isCounting = true;
 }
 
@@ -124,12 +131,10 @@ void onEndButton() {
 }
 
 bool ring(unsigned long t, unsigned long start_t, unsigned long until) {
-  if ((t < start_t) && ((start_t - until) <= t)) {
-    digitalWrite(RING_BELL, HIGH);
+  if ((start_t >= t) && (t > (start_t - until))) {
     return true;
   }
   else {
-    digitalWrite(RING_BELL, LOW);
     return false;
   }
 }
