@@ -31,10 +31,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(START_BUTTON), onStartButton, FALLING);
   attachInterrupt(digitalPinToInterrupt(END_BUTTON), onEndButton, FALLING);
 
-  isLT = true;
-  beginTime = millis();
-  endTime = 5UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME;
-  isCounting = true;
+//  isLT = true;
+//  beginTime = millis();
+//  endTime = 5UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME;
+//  isCounting = true;
 }
 
 void loop() {
@@ -56,6 +56,12 @@ void loop() {
       ring(t, 100UL, 100UL);
     }
     else {
+      isRing = ring(t, 5000UL * 60UL + 100UL, 100UL) |
+      ring(t, 1000UL * 60UL + 300UL, 100UL) |
+      ring(t, 1000UL * 60UL + 100UL, 100UL) |
+      ring(t, 500UL, 100UL) |
+      ring(t, 300UL, 100UL) |
+      ring(t, 100UL, 100UL);
     }
   }
 
