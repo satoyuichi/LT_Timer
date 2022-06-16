@@ -125,7 +125,7 @@ void onStartButton() {
 
   isLT = digitalRead(SELECT_SWITCH);
   beginTime = millis();
-  endTime = isLT ? (5UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME) : (15UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME);
+  endTime = isLT ? (5UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME) : (10UL * 60UL * 1000UL + beginTime + ADDITIONAL_TIME);
   isCounting = true;
 }
 
